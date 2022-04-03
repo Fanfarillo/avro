@@ -73,7 +73,7 @@
             </manifestEntries>
           </archive>
         </configuration>
-        <executions>
+<!--        <executions>
           <execution>
             <id>prepare-test-jar</id>
             <phase>generate-test-resources</phase>
@@ -87,7 +87,7 @@
               <outputDirectory>${project.build.testOutputDirectory}</outputDirectory>
             </configuration>
           </execution>
-        </executions>
+        </executions>	-->
       </plugin>
       <!-- Avro generates a parser class with javacc. By default, this looks in src/main/javacc
         and outputs to target/generated-sources/javacc See http://mojo.codehaus.org/javacc-maven-plugin/javacc-mojo.html
@@ -121,7 +121,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
-        <executions>
+<!--        <executions>
           <execution>
             <phase>generate-test-sources</phase>
             <goals>
@@ -141,17 +141,17 @@
               </arguments>
             </configuration>
           </execution>
-        </executions>
+        </executions>	-->
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
         <executions>
-          <execution>
-            <!--
+<!--          <execution>
+            
               Special-purpose maven plugins that generate code usually add the generated sources into the project.
               But because the general-purpose exec plugin above generated code, we need to manually add the generated sources.
-            -->
+            
             <id>add-test-source</id>
             <phase>generate-test-sources</phase>
             <goals>
@@ -162,7 +162,7 @@
                 <source>${project.basedir}/target/generated-test-sources/javacc</source>
               </sources>
             </configuration>
-          </execution>
+          </execution>	-->
           <execution>
             <!--
               Special-purpose maven plugins that generate code usually add the generated sources into the project.
