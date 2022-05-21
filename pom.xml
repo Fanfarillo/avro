@@ -100,6 +100,13 @@
     </mailingList>
   </mailingLists>
 
+  <!-- SonarCloud additions -->
+  <sonar.organization>fanfarillo</sonar.organization>
+  <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+
+  <!-- JaCoCo additions -->
+  <sonar.coverage.jacoco.xmlReportPaths>../test-coverage/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+
   <build>
     <pluginManagement>
       <plugins>
@@ -484,6 +491,27 @@
             </configuration>
           </plugin>
         </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>code-coverage</id>
+      <build>
+       <pluginManagement>
+        <plugins>
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <version>0.8.0</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>prepare-agent</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+       </pluginManagement>
       </build>
     </profile>
   </profiles>
