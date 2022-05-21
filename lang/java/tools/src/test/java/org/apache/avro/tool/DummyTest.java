@@ -35,4 +35,22 @@ public class DummyTest {
       }
     }
   }
+
+  /**
+   * Make sure that the tool name is not too long, otherwise space for description
+   * is too short because they are rebalanced in the CLI.
+   */
+  @Test
+  public void testToolNameLength() {
+    // 13 chosen for backwards compatibility
+    final int MAX_NAME_LENGTH = 13;
+
+    Main m = new Main();
+    for (Tool t : m.tools.values()) {
+      if (t.getName().length() > MAX_NAME_LENGTH) {
+        fail("Tool name too long (" + t.getName().length() + "): " + t.getName() + ". Max length is: "
+            + MAX_NAME_LENGTH);
+      }
+    }
+  }
 }
