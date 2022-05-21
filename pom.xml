@@ -512,14 +512,24 @@
        </pluginManagement>
       </build>
     </profile>
+    <profile>
+      <id>fix-violations</id>
+      <build>
+       <pluginManagement>
+        <plugins>
+          <plugin>
+	    <executions>
+  	      <execution>
+    		<goals>
+      		  <goal>check</goal>
+    		</goals>
+              </execution>
+	    </executions>
+	  </plugin>
+        </plugins>
+       </pluginManagement>
+      </build>
+    </profile>
   </profiles>
-
-<executions>
-  <execution>
-    <goals>
-      <goal>check</goal>
-    </goals>
-  </execution>
-</executions>
 
 </project>
