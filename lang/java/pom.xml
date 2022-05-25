@@ -171,26 +171,26 @@
             </archive>
           </configuration>
         </plugin>
-        <plugin>
+  <!--      <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <configuration>
-            <includes>
+            <includes> -->
               <!-- Avro naming convention for JUnit tests -->
-              <include>**/Test**</include>
+     <!--         <include>**/Test**</include>
             </includes>
-            <excludes>
+            <excludes> -->
               <!-- A few innner classes are not to be tested -->
-              <exclude>**/*$*</exclude>
+     <!--         <exclude>**/*$*</exclude> -->
               <!-- exclude the generated classes under apache.avro.test, some of
                 these match **/Test** and are not JUnit tests -->
-              <exclude>**/apache/avro/test/**</exclude>
+     <!--         <exclude>**/apache/avro/test/**</exclude>
             </excludes>
             <enableAssertions>false</enableAssertions>
             <trimStackTrace>false</trimStackTrace>
             <runOrder>random</runOrder>
             <parallel>all</parallel>
-            <useUnlimitedThreads>true</useUnlimitedThreads>
+            <useUnlimitedThreads>true</useUnlimitedThreads> -->
             <!--<perCoreThreadCount>true</perCoreThreadCount>-->
 
             <!-- TestSpecificCompiler instantiates a Java compiler to test output results,
@@ -198,14 +198,14 @@
                  This may cause problems on some platforms.
                  See https://maven.apache.org/plugins/maven-surefire-plugin/examples/class-loading.html
                  for more information. -->
-            <useManifestOnlyJar>false</useManifestOnlyJar>
+     <!--       <useManifestOnlyJar>false</useManifestOnlyJar> -->
             <!-- configures unit test standard error and standard out to go to a file per test
                  rather than the console. -->
-            <redirectTestOutputToFile>true</redirectTestOutputToFile>
+     <!--       <redirectTestOutputToFile>true</redirectTestOutputToFile>
             <failIfNoTests>false</failIfNoTests>
             <argLine>-Xmx1000m</argLine>
           </configuration>
-        </plugin>
+        </plugin> -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
@@ -441,7 +441,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
+      <!--      <configuration>
               <includes>
                 <include>**/DataFileInteropTest*</include>
               </includes>
@@ -454,7 +454,7 @@
               <systemPropertyVariables>
                 <test.dir>../../../build/interop/data/</test.dir>
               </systemPropertyVariables>
-            </configuration>
+            </configuration> -->
           </plugin>
         </plugins>
       </build>
