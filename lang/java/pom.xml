@@ -67,6 +67,10 @@
     <file-management.version>3.0.0</file-management.version>
     <javacc-plugin.version>3.0.3</javacc-plugin.version>
     <javacc.version>7.0.10</javacc.version>
+    <surefire.version>3.0.0-M5</surefire.version>
+    <failsafe.version>2.21.0</failsafe.version>
+    <!-- do not skip integration tests-->
+    <skipITs>false</skipITs>
     <!-- sonarcloud-->
     <sonar.coverage.jacoco.xmlReportPaths>${maven.multiModuleProjectDirectory}/lang/java/test-jacoco/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
   </properties>
@@ -478,6 +482,19 @@
                 <java.security.krb5.kdc>kdc0.ox.ac.uk:kdc1.ox.ac.uk</java.security.krb5.kdc>
               </systemPropertyVariables>
             </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <version>${failsafe.version}</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>integration-test</goal>
+                  <goal>verify</goal>
+                </goals>
+              </execution>
+            </executions>
           </plugin>
         </plugins>
       </build>
