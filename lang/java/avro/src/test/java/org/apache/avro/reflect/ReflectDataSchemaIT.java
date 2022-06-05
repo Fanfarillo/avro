@@ -112,7 +112,7 @@ public class ReflectDataSchemaIT {
 
   }
 
-  public enum ParamType {
+  private enum ParamType {
     NULL, EMPTY, VALID, INVALID
   }
 

@@ -159,7 +159,7 @@ public class SchemaTest {
 
   }
 
-  public enum ParamType {
+  private enum ParamType {
     NULL, VALID, INVALID, PRIMITIVE, RECORD, ENUM, ARRAY, MAP, UNION, FIXED
   }
 
