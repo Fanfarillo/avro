@@ -53,25 +53,63 @@ public class SchemaTest {
         this.expectedOutput = Schema.create(Schema.Type.STRING);
         break;
 
+      case PRIM_BOOL:
+        jsonStr = "{\"type\":\"boolean\"}";
+        this.schema = mapper.readTree(jsonStr);
+        this.expectedOutput = Schema.create(Schema.Type.BOOLEAN);
+        break;
+
+      case PRIM_BYTES:
+        jsonStr = "{\"type\":\"bytes\"}";
+        this.schema = mapper.readTree(jsonStr);
+        this.expectedOutput = Schema.create(Schema.Type.BYTES);
+        break;
+
+      case PRIM_INT:
+        jsonStr = "{\"type\":\"int\"}";
+        this.schema = mapper.readTree(jsonStr);
+        this.expectedOutput = Schema.create(Schema.Type.INT);
+
+      case PRIM_LONG:
+        jsonStr = "{\"type\":\"long\"}";
+        this.schema = mapper.readTree(jsonStr);
+        this.expectedOutput = Schema.create(Schema.Type.LONG);
+        break;
+
+      case PRIM_FLOAT:
+        jsonStr = "{\"type\":\"float\"}";
+        this.schema = mapper.readTree(jsonStr);
+        this.expectedOutput = Schema.create(Schema.Type.FLOAT);
+        break;
+
+      case PRIM_DOUBLE:
+        jsonStr = "{\"type\":\"double\"}";
+        this.schema = mapper.readTree(jsonStr);
+        this.expectedOutput = Schema.create(Schema.Type.DOUBLE);
+        break;
+
       case RECORD:
-        jsonStr = "{\"type\":\"record\",\"name\":\"RecordName\",\"fields\":[{\"name\":\"Value\",\"type\":\"string\"}]}";
+        jsonStr = "{\"type\":\"record\",\"name\":\"RecordName\",\"aliases\":[\"RecordAlias\"],"
+            + "\"fields\":[{\"name\":\"Value\",\"type\":\"string\"}]}";
         this.schema = mapper.readTree(jsonStr);
         Schema nestedSchema = Schema.create(Schema.Type.STRING);
         Schema.Field recordField = new Schema.Field("Value", nestedSchema, null, null);
         List<Schema.Field> recordFields = new ArrayList<>();
         recordFields.add(recordField);
         this.expectedOutput = Schema.createRecord("RecordName", null, nameStr, false, recordFields);
+        this.expectedOutput.addAlias("RecordAlias");
         break;
 
       case ENUM:
-        jsonStr = "{\"type\":\"enum\",\"name\":\"EnumName\",\"symbols\":[\"COME\",\"QUANDO\",\"FUORI\",\"PIOVE\"]}";
+        jsonStr = "{\"type\":\"enum\",\"name\":\"EnumName\",\"doc\":\"This is an enum schema\","
+            + "\"symbols\":[\"COME\",\"QUANDO\",\"FUORI\",\"PIOVE\"]}";
         this.schema = mapper.readTree(jsonStr);
         List<String> enumValues = new ArrayList<>();
         enumValues.add("COME");
         enumValues.add("QUANDO");
         enumValues.add("FUORI");
         enumValues.add("PIOVE");
-        this.expectedOutput = Schema.createEnum("EnumName", null, nameStr, enumValues);
+        this.expectedOutput = Schema.createEnum("EnumName", "This is an enum schema", nameStr, enumValues);
         break;
 
       case ARRAY:
@@ -115,6 +153,7 @@ public class SchemaTest {
         this.schema = null;
         this.expectedOutput = null;
         break;
+
       }
 
     } catch (Exception e) {
@@ -141,7 +180,16 @@ public class SchemaTest {
         { ParamType.FIXED, ParamType.INVALID, true }, { ParamType.INVALID, ParamType.NULL, true },
         { ParamType.INVALID, ParamType.VALID, true }, { ParamType.INVALID, ParamType.INVALID, true },
         { ParamType.NULL, ParamType.NULL, true }, { ParamType.NULL, ParamType.VALID, true },
-        { ParamType.NULL, ParamType.INVALID, true } });
+        { ParamType.NULL, ParamType.INVALID, true }, { ParamType.PRIM_BOOL, ParamType.NULL, true },
+        { ParamType.PRIM_BOOL, ParamType.VALID, false }, { ParamType.PRIM_BOOL, ParamType.INVALID, true },
+        { ParamType.PRIM_BYTES, ParamType.NULL, true }, { ParamType.PRIM_BYTES, ParamType.VALID, false },
+        { ParamType.PRIM_BYTES, ParamType.INVALID, true }, { ParamType.PRIM_INT, ParamType.NULL, true },
+        { ParamType.PRIM_INT, ParamType.VALID, false }, { ParamType.PRIM_INT, ParamType.INVALID, true },
+        { ParamType.PRIM_LONG, ParamType.NULL, true }, { ParamType.PRIM_LONG, ParamType.VALID, false },
+        { ParamType.PRIM_LONG, ParamType.INVALID, true }, { ParamType.PRIM_FLOAT, ParamType.NULL, true },
+        { ParamType.PRIM_FLOAT, ParamType.VALID, false }, { ParamType.PRIM_FLOAT, ParamType.INVALID, true },
+        { ParamType.PRIM_DOUBLE, ParamType.NULL, true }, { ParamType.PRIM_DOUBLE, ParamType.VALID, false },
+        { ParamType.PRIM_DOUBLE, ParamType.INVALID, true } });
   }
 
   @Test
@@ -160,7 +208,8 @@ public class SchemaTest {
   }
 
   private enum ParamType {
-    NULL, VALID, INVALID, PRIMITIVE, RECORD, ENUM, ARRAY, MAP, UNION, FIXED
+    NULL, VALID, INVALID, PRIMITIVE, RECORD, ENUM, ARRAY, MAP, UNION, FIXED, PRIM_BOOL, PRIM_BYTES, PRIM_INT, PRIM_LONG,
+    PRIM_FLOAT, PRIM_DOUBLE
   }
 
 }

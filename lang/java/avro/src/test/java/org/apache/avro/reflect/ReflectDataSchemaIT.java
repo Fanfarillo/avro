@@ -12,6 +12,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.Matchers.isA;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+
 @RunWith(Parameterized.class)
 public class ReflectDataSchemaIT {
 
@@ -49,6 +53,11 @@ public class ReflectDataSchemaIT {
         Schema schema = Schema.createEnum(null, null, null, null);
         this.names.put(null, schema);
         break;
+
+      case MOCKED:
+        this.names = new HashMap<>();
+        Schema mockedSchema = getMockedSchema();
+        this.names.put("Mocked_Schema", mockedSchema);
       }
 
       switch (typeType) {
@@ -86,8 +95,17 @@ public class ReflectDataSchemaIT {
   public static Collection<Object[]> getParameters() {
     return Arrays.asList(new Object[][] {
         // TYPE NAMES EXCEPTION
-        { ParamType.NULL, ParamType.NULL, true }, { ParamType.VALID, ParamType.EMPTY, false },
-        { ParamType.VALID, ParamType.VALID, false }, { ParamType.INVALID, ParamType.INVALID, true } });
+        { ParamType.VALID, ParamType.MOCKED, false }, { ParamType.NULL, ParamType.NULL, true },
+        { ParamType.VALID, ParamType.EMPTY, false }, { ParamType.VALID, ParamType.VALID, false },
+        { ParamType.INVALID, ParamType.INVALID, true }, });
+  }
+
+  private Schema getMockedSchema() {
+
+    Schema mockedSchema = mock(Schema.class);
+    doNothing().when(mockedSchema).equals(isA(Object.class));
+    return mockedSchema;
+
   }
 
   @Test
@@ -113,7 +131,7 @@ public class ReflectDataSchemaIT {
   }
 
   private enum ParamType {
-    NULL, EMPTY, VALID, INVALID
+    NULL, EMPTY, VALID, INVALID, MOCKED
   }
 
 }
