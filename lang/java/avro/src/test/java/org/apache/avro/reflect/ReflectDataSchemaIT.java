@@ -7,10 +7,12 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Arrays;
 
 import static org.mockito.Mockito.mock;
 
@@ -23,12 +25,12 @@ public class ReflectDataSchemaIT {
   private boolean isExceptionExpected;
   private boolean isExceptionThrown = false;
 
-  public ReflectDataSchemaIT(ParamType typeType, ParamType namesType, boolean isExceptionExpected) {
+  public ReflectDataSchemaIT(ParamType typeType, NamesType namesType, boolean isExceptionExpected) {
     configure(typeType, namesType, isExceptionExpected);
 
   }
 
-  private void configure(ParamType typeType, ParamType namesType, boolean isExceptionExpected) {
+  private void configure(ParamType typeType, NamesType namesType, boolean isExceptionExpected) {
 
     this.isExceptionExpected = isExceptionExpected;
     try {
@@ -51,25 +53,23 @@ public class ReflectDataSchemaIT {
         Schema schema = Schema.createEnum(null, null, null, null);
         this.names.put("Schema", schema);
         break;
-
       case VAL_MOCK:
         this.names = new HashMap<>();
         Schema mockedSchema = getMockedSchema();
         this.names.put("Mocked_Schema", mockedSchema);
         break;
-
       case VAL_NULL:
         this.names = new HashMap<>();
         this.names.put("No_Schema", null);
         break;
       case EMP_VAL:
         this.names = new HashMap<>();
-        Schema valSchema = Schema.create(Schema.Type.STRING);
+        Schema valSchema = Schema.create(Schema.Type.BOOLEAN);
         this.names.put("", valSchema);
         break;
       case EMP_INV:
         this.names = new HashMap<>();
-        Schema invSchema = Schema.createEnum(null, null, null, null);
+        Schema invSchema = Schema.createRecord(null, null, null, false, null);
         this.names.put("", invSchema);
         break;
       case EMP_MOCK:
@@ -83,7 +83,7 @@ public class ReflectDataSchemaIT {
         break;
       case NULL_VAL:
         this.names = new HashMap<>();
-        Schema valSchema2 = Schema.create(Schema.Type.STRING);
+        Schema valSchema2 = Schema.create(Schema.Type.FLOAT);
         this.names.put(null, valSchema2);
         break;
       case NULL_INV:
@@ -107,15 +107,64 @@ public class ReflectDataSchemaIT {
         this.type = null;
         this.expectedOutput = null;
         break;
-      case VALID:
-        String[] arrayStr = {};
-        this.type = arrayStr.getClass().getComponentType();
-        this.expectedOutput = Schema.create(Schema.Type.STRING);
-        break;
       case INVALID:
         Schema[] arraySch = null;
         this.type = arraySch.getClass().getComponentType();
         this.expectedOutput = null;
+        break;
+      case STRING:
+        String[] arrayStr = {};
+        this.type = arrayStr.getClass().getComponentType();
+        this.expectedOutput = Schema.create(Schema.Type.STRING);
+        break;
+      case ERROR:
+        Exception[] arrayExcep = {};
+        this.type = arrayExcep.getClass().getComponentType();
+        this.expectedOutput = Schema.createRecord("Exception", null, "java.lang", true);
+        // Now we are creating the fields of an exception
+        List<Schema> schemas = new ArrayList<>();
+        Schema firstType = Schema.create(Schema.Type.NULL);
+        Schema secondType = Schema.create(Schema.Type.STRING);
+        schemas.add(firstType);
+        schemas.add(secondType);
+        Schema nestedSchema = Schema.createUnion(schemas);
+        List<Schema.Field> fields = new ArrayList<>();
+        Schema.Field field = new Schema.Field("detailMessage", nestedSchema, null, null);
+        fields.add(field);
+        this.expectedOutput.setFields(fields);
+        break;
+      case VOID:
+        this.type = Void.TYPE;
+        this.expectedOutput = Schema.create(Schema.Type.NULL);
+        break;
+      case BOOLEAN:
+        boolean[] arrayBool = {};
+        this.type = arrayBool.getClass().getComponentType();
+        this.expectedOutput = Schema.create(Schema.Type.BOOLEAN);
+        break;
+      case INT_ARR:
+        int[] arrayInt = {};
+        this.type = arrayInt.getClass();
+        Schema elementType2 = Schema.create(Schema.Type.INT);
+        this.expectedOutput = Schema.createArray(elementType2);
+        this.expectedOutput.addProp("java-class", "[I");
+        break;
+      case BYTE:
+        this.type = Byte.TYPE;
+        this.expectedOutput = Schema.create(Schema.Type.INT);
+        this.expectedOutput.addProp("java-class", "java.lang.Byte");
+        break;
+      case SHORT:
+        short[] arrayShort = {};
+        this.type = arrayShort.getClass().getComponentType();
+        this.expectedOutput = Schema.create(Schema.Type.INT);
+        this.expectedOutput.addProp("java-class", "java.lang.Short");
+        break;
+      case CHAR:
+        char[] arrayChar = {};
+        this.type = arrayChar.getClass().getComponentType();
+        this.expectedOutput = Schema.create(Schema.Type.INT);
+        this.expectedOutput.addProp("java-class", "java.lang.Character");
         break;
       }
 
@@ -124,7 +173,7 @@ public class ReflectDataSchemaIT {
           "NullPointerException should be thrown during configuration only if Type is invalid or"
               + "Schema is invalid. Instead, " + e1.getClass().getName() + " has been thrown and namesType == "
               + namesType + ".",
-          namesType == ParamType.VAL_INV || namesType == ParamType.EMP_INV || namesType == ParamType.NULL_INV
+          namesType == NamesType.VAL_INV || namesType == NamesType.EMP_INV || namesType == NamesType.NULL_INV
               || typeType == ParamType.INVALID);
       this.isExceptionThrown = true;
 
@@ -139,13 +188,15 @@ public class ReflectDataSchemaIT {
   public static Collection<Object[]> getParameters() {
     return Arrays.asList(new Object[][] {
         // TYPE NAMES EXCEPTION
-        { ParamType.NULL, ParamType.NULL, true }, { ParamType.NULL, ParamType.EMP_MOCK, true },
-        { ParamType.NULL, ParamType.EMP_NULL, true }, { ParamType.INVALID, ParamType.EMP_VAL, true },
-        { ParamType.INVALID, ParamType.EMP_INV, true }, { ParamType.VALID, ParamType.EMPTY, false },
-        { ParamType.VALID, ParamType.VAL_VAL, false }, { ParamType.VALID, ParamType.VAL_INV, true },
-        { ParamType.VALID, ParamType.VAL_MOCK, false }, { ParamType.VALID, ParamType.VAL_NULL, false },
-        { ParamType.VALID, ParamType.NULL_VAL, false }, { ParamType.VALID, ParamType.NULL_INV, true },
-        { ParamType.VALID, ParamType.NULL_MOCK, false }, { ParamType.VALID, ParamType.NULL_NULL, false }, });
+        { ParamType.NULL, NamesType.NULL, true }, { ParamType.NULL, NamesType.EMP_MOCK, true },
+        { ParamType.NULL, NamesType.EMP_NULL, true }, { ParamType.INVALID, NamesType.EMP_VAL, true },
+        { ParamType.INVALID, NamesType.EMP_INV, true }, { ParamType.STRING, NamesType.EMPTY, false },
+        { ParamType.STRING, NamesType.VAL_VAL, false }, { ParamType.STRING, NamesType.VAL_INV, true },
+        { ParamType.ERROR, NamesType.VAL_MOCK, false }, { ParamType.VOID, NamesType.VAL_NULL, false },
+        { ParamType.BOOLEAN, NamesType.NULL_VAL, false }, { ParamType.INT_ARR, NamesType.NULL_INV, true },
+        { ParamType.INT_ARR, NamesType.NULL_MOCK, false }, { ParamType.INT_ARR, NamesType.NULL_NULL, false },
+        { ParamType.BYTE, NamesType.VAL_VAL, false }, { ParamType.SHORT, NamesType.VAL_VAL, false },
+        { ParamType.CHAR, NamesType.VAL_VAL, false } });
   }
 
   private Schema getMockedSchema() {
@@ -177,8 +228,12 @@ public class ReflectDataSchemaIT {
   }
 
   private enum ParamType {
-    NULL, EMPTY, VALID, INVALID, VAL_VAL, VAL_INV, VAL_MOCK, VAL_NULL, EMP_VAL, EMP_INV, EMP_MOCK, EMP_NULL, NULL_VAL,
-    NULL_INV, NULL_MOCK, NULL_NULL
+    NULL, INVALID, STRING, ERROR, VOID, BOOLEAN, INT_ARR, BYTE, SHORT, CHAR
+  }
+
+  private enum NamesType {
+    NULL, EMPTY, VAL_VAL, VAL_INV, VAL_MOCK, VAL_NULL, EMP_VAL, EMP_INV, EMP_MOCK, EMP_NULL, NULL_VAL, NULL_INV,
+    NULL_MOCK, NULL_NULL
   }
 
 }

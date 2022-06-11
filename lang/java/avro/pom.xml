@@ -352,9 +352,11 @@
             <configuration>
               <targetClasses>
                 <param>org.apache.avro.Schema</param>
+                <param>org.apache.avro.reflect.ReflectData</param>
               </targetClasses>
               <targetTests>
                 <param>org.apache.avro.SchemaTest</param>
+                <param>org.apache.avro.reflect.ReflectDataSchemaIT</param>
               </targetTests>
               <avoidCallsTo>
                 <avoidCallsTo>org.slf4j</avoidCallsTo>
